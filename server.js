@@ -239,7 +239,6 @@ app.post("/api/reservaciones", async (req, res) => {
     const resultado = rows[0][0];
     return respuestaOk(res, resultado, "Reservacion creada");
   } catch (err) {
-    // Si el SP lanza un error de negocio (SQLSTATE 45000), lo capturamos aqui
     return respuestaError(res, 400, "SP_ERROR", err.message);
   }
 });

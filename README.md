@@ -14,12 +14,12 @@ The application provides three different views based on the user's role: Adminis
 
 The Administrator view provides access to the application's main sections.
 
-<img width="686" height="446" alt="Airport API" src="https://github.com/user-attachments/assets/3d044847-f13a-4f5d-a3ce-11f980166762" />
-
 - View today's flights.
 - View frequent passengers.
 - View aircraft undergoing maintenance.
 - Access the available application sections.
+
+<img width="686" height="446" alt="Airport API" src="https://github.com/user-attachments/assets/3d044847-f13a-4f5d-a3ce-11f980166762" />
 
 ### Employee
 
@@ -29,11 +29,16 @@ The Employee view provides access to passenger-related and operational features.
 - Access the crew assignment section.
 - Perform passenger check-in.
 
+<img width="680" height="339" alt="image" src="https://github.com/user-attachments/assets/8fe82f14-ad64-4910-9902-4b525dae8a8a" />
+
 ### Public
 
 The Public view provides access to flight information without displaying the administrative sections.
 
 - View today's flights.
+
+<img width="683" height="206" alt="image" src="https://github.com/user-attachments/assets/d7606be7-c69b-4a57-a5fb-305c8e27476f" />
+
 
 ---
 

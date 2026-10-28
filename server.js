@@ -1,9 +1,4 @@
-// =============================================
-//   AEROPUERTO API - server.js
-//   Materia: Bases de Datos Avanzadas
-//   Desarrollador: OA
-// =============================================
-
+const path = require("path");
 require("dotenv").config();
 const express = require("express");
 const mysql = require("mysql2/promise");
@@ -12,11 +7,9 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ─── MIDDLEWARES ──────────────────────────────────────────────────────────────
-app.use(cors());                          // Permite que Diego se conecte desde su HTML
-app.use(express.json());                  // Permite leer JSON en el body de los POST
+app.use(cors());                          
+app.use(express.json());              
 
-// ─── CONEXION A LA BASE DE DATOS ─────────────────────────────────────────────
 const pool = mysql.createPool({
   host:     process.env.DB_HOST,
   port:     process.env.DB_PORT,
@@ -27,7 +20,6 @@ const pool = mysql.createPool({
   connectionLimit: 10,
 });
 
-// ─── FUNCION HELPER: Respuesta exitosa ────────────────────────────────────────
 function respuestaOk(res, data, message = "Operacion exitosa") {
   return res.status(200).json({
     ok: true,
@@ -36,7 +28,6 @@ function respuestaOk(res, data, message = "Operacion exitosa") {
   });
 }
 
-// ─── FUNCION HELPER: Respuesta de error ──────────────────────────────────────
 function respuestaError(res, statusCode, code, message) {
   return res.status(statusCode).json({
     ok: false,
@@ -47,12 +38,6 @@ function respuestaError(res, statusCode, code, message) {
   });
 }
 
-// =============================================================================
-//   ENDPOINTS
-// =============================================================================
-
-// ─── GET /api/health ─────────────────────────────────────────────────────────
-// Verifica que el servidor y la BD esten corriendo
 app.get("/api/health", async (req, res) => {
   try {
     await pool.query("SELECT 1");
@@ -62,8 +47,6 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-// ─── GET /api/dashboard ──────────────────────────────────────────────────────
-// Contadores generales para la parte superior del frontend
 app.get("/api/dashboard", async (req, res) => {
   try {
     const [[vuelos_hoy]]          = await pool.query("SELECT COUNT(*) AS total FROM vuelos WHERE DATE(fecha_salida) = CURRENT_DATE()");
@@ -82,8 +65,6 @@ app.get("/api/dashboard", async (req, res) => {
   }
 });
 
-// ─── GET /api/vuelos-dia ─────────────────────────────────────────────────────
-// Consume la vista vuelos_dia — muestra vuelos programados para hoy
 app.get("/api/vuelos-dia", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM vuelos_dia");
@@ -93,8 +74,6 @@ app.get("/api/vuelos-dia", async (req, res) => {
   }
 });
 
-// ─── GET /api/pasajeros-frecuentes ───────────────────────────────────────────
-// Consume la vista pasajeros_frecuentes — pasajeros con mas de 10 vuelos en el ultimo año
 app.get("/api/pasajeros-frecuentes", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM pasajeros_frecuentes");
@@ -104,8 +83,6 @@ app.get("/api/pasajeros-frecuentes", async (req, res) => {
   }
 });
 
-// ─── GET /api/aeronaves-mantenimiento ────────────────────────────────────────
-// Consume la vista aeronaves_mantenimiento — aeronaves en estado Mantenimiento
 app.get("/api/aeronaves-mantenimiento", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM aeronaves_mantenimiento");
@@ -115,8 +92,6 @@ app.get("/api/aeronaves-mantenimiento", async (req, res) => {
   }
 });
 
-// ─── GET /api/vuelos ─────────────────────────────────────────────────────────
-// Lista todos los vuelos con aerolinea, ruta y aeronave
 app.get("/api/vuelos", async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -143,8 +118,6 @@ app.get("/api/vuelos", async (req, res) => {
   }
 });
 
-// ─── GET /api/vuelos/:id ─────────────────────────────────────────────────────
-// Detalle completo de un vuelo especifico
 app.get("/api/vuelos/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -180,8 +153,6 @@ app.get("/api/vuelos/:id", async (req, res) => {
   }
 });
 
-// ─── GET /api/pasajeros ──────────────────────────────────────────────────────
-// Lista pasajeros para seleccionar al crear una reservacion
 app.get("/api/pasajeros", async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -202,8 +173,6 @@ app.get("/api/pasajeros", async (req, res) => {
   }
 });
 
-// ─── GET /api/rutas ──────────────────────────────────────────────────────────
-// Lista rutas para asignar tripulacion
 app.get("/api/rutas", async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -222,8 +191,6 @@ app.get("/api/rutas", async (req, res) => {
   }
 });
 
-// ─── GET /api/reservaciones ──────────────────────────────────────────────────
-// Lista reservaciones con info del vuelo y pasajero
 app.get("/api/reservaciones", async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -256,25 +223,19 @@ app.get("/api/reservaciones", async (req, res) => {
   }
 });
 
-// ─── POST /api/reservaciones ─────────────────────────────────────────────────
-// Ejecuta sp_proceso_reservacion para crear una reservacion completa
-// Body esperado: { vuelo_id, pasajero_id, clase, asiento, precio, metodo_pago }
 app.post("/api/reservaciones", async (req, res) => {
   const { vuelo_id, pasajero_id, clase, asiento, precio, metodo_pago } = req.body;
 
-  // Validacion de campos requeridos
   if (!vuelo_id || !pasajero_id || !clase || !asiento || !precio || !metodo_pago) {
     return respuestaError(res, 400, "MISSING_FIELDS", "Faltan campos requeridos: vuelo_id, pasajero_id, clase, asiento, precio, metodo_pago");
   }
 
   try {
-    // Fernando hace el SP, nosotros solo hacemos el CALL
     const [rows] = await pool.query(
       "CALL sp_proceso_reservacion(?, ?, ?, ?, ?, ?)",
       [vuelo_id, pasajero_id, clase, asiento, precio, metodo_pago]
     );
 
-    // El SP regresa un result set en rows[0]
     const resultado = rows[0][0];
     return respuestaOk(res, resultado, "Reservacion creada");
   } catch (err) {
@@ -283,9 +244,6 @@ app.post("/api/reservaciones", async (req, res) => {
   }
 });
 
-// ─── POST /api/checkin ───────────────────────────────────────────────────────
-// Ejecuta checkin_automatico — check-in masivo para un vuelo
-// Body esperado: { vuelo_id }
 app.post("/api/checkin", async (req, res) => {
   const { vuelo_id } = req.body;
 
@@ -306,9 +264,6 @@ app.post("/api/checkin", async (req, res) => {
   }
 });
 
-// ─── POST /api/tripulacion/asignar ───────────────────────────────────────────
-// Ejecuta asignar_tripulacion — asigna tripulacion a un vuelo por fecha y ruta
-// Body esperado: { fecha_vuelo, ruta_id }
 app.post("/api/tripulacion/asignar", async (req, res) => {
   const { fecha_vuelo, ruta_id } = req.body;
 
@@ -325,14 +280,10 @@ app.post("/api/tripulacion/asignar", async (req, res) => {
     const resultado = rows[0];
     return respuestaOk(res, resultado, "Tripulacion asignada correctamente");
   } catch (err) {
-    // Si no hay vuelo valido o ya tiene tripulacion, el SP lanza SQLSTATE 45000
     return respuestaError(res, 400, "SP_ERROR", err.message);
   }
 });
 
-// ─── GET /api/estadisticas-puntualidad ───────────────────────────────────────
-// Ejecuta calcular_estadisticas_puntualidad — reporte mensual por aerolinea
-// Query params: ?anio=2026&mes=6
 app.get("/api/estadisticas-puntualidad", async (req, res) => {
   const { anio, mes } = req.query;
 
@@ -353,12 +304,18 @@ app.get("/api/estadisticas-puntualidad", async (req, res) => {
   }
 });
 
-// ─── RUTA NO ENCONTRADA (404) ─────────────────────────────────────────────────
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.get("/index.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.js"));
+});
+
 app.use((req, res) => {
   return respuestaError(res, 404, "NOT_FOUND", `La ruta ${req.method} ${req.originalUrl} no existe`);
 });
 
-// ─── INICIAR SERVIDOR ────────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log("=============================================");
   console.log(`  AEROPUERTO API corriendo en puerto ${PORT}`);

@@ -6,10 +6,6 @@ The Airport API receives requests from the web application, queries the `aeropue
 
 It acts as the backend between the web application and the MySQL database, providing endpoints for retrieving flight information, passengers, routes, reservations, and other airport operations.
 
-<img width="686" height="446" alt="Airport API" src="https://github.com/user-attachments/assets/3d044847-f13a-4f5d-a3ce-11f980166762" />
-
----
-
 ## User Roles
 
 The application provides three different views based on the user's role: Administrator, Employee, and Public.
@@ -17,6 +13,8 @@ The application provides three different views based on the user's role: Adminis
 ### Administrator
 
 The Administrator view provides access to the application's main sections.
+
+<img width="686" height="446" alt="Airport API" src="https://github.com/user-attachments/assets/3d044847-f13a-4f5d-a3ce-11f980166762" />
 
 - View today's flights.
 - View frequent passengers.

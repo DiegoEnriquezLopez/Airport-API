@@ -3,7 +3,8 @@
 ## ¿Qué hace este servidor?
 Recibe peticiones de la página web de Diego, consulta la base de datos de Alizee/Fernando, y regresa la información en JSON.
 
----
+<img width="686" height="446" alt="image" src="https://github.com/user-attachments/assets/3d044847-f13a-4f5d-a3ce-11f980166762" />
+
 
 ## Pasos para correrlo
 
